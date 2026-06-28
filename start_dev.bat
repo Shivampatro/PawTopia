@@ -1,0 +1,6 @@
+@echo off
+echo Starting PawTopia Backend Server...
+start cmd /k "cd backend && npm run dev"
+
+echo Starting PawTopia Frontend Server...
+start cmd /k "cd frontend && npm start"
