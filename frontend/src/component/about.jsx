@@ -7,46 +7,56 @@ import S2 from "../images/s2.png";
 import S3 from "../images/s3.png";
 
 
-export default function about(props) {
+export default function About(props) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user && user.role === 'admin';
+
     return (
         <>
+            <header className="header_section">
+                <div className="container">
+                    <nav className="navbar navbar-expand-lg custom_nav-container ">
+                        <Link className="navbar-brand" to="/dashboard">
+                            <img src={Logo} alt="" />
+                            <span>
+                                PawTopia
+                            </span>
+                        </Link>
 
-                <header className="header_section">
-                    <div className="container">
-                        <nav className="navbar navbar-expand-lg custom_nav-container ">
-                            <Link  className="navbar-brand" to="index.html">
-                                <img src={Logo} alt="" />
-                                <span>
-                                    PawTopia
-                                </span>
-                            </Link>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className=""> </span>
+                        </button>
 
-                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className=""> </span>
-                            </button>
-
-                            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul className="navbar-nav ">
-                                    <li className="nav-item active">
-                                        <Link  className="nav-link" to="/dashboard"> Home </Link>
-                                    </li>
+                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul className="navbar-nav ">
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/dashboard"> Home </Link>
+                                </li>
+                                <li className="nav-item active">
+                                    <Link className="nav-link" to="/about"> About </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/pet_adop"> Pets Category </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to="/accessories"> Accessories </Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link pr-lg-0" to="/contact"> Contact us</Link>
+                                </li>
+                                {isAdmin && (
                                     <li className="nav-item">
-                                        <Link  className="nav-link" to=" "> About </Link>
+                                        <Link className="nav-link text-warning fw-bold" to="/admin/dashboard">Admin Panel</Link>
                                     </li>
-                                    <li className="nav-item">
-                                        <Link  className="nav-link" to="/pet_adop"> Pets Category </Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link  className="nav-link pr-lg-0" to=" "> Contact us</Link>
-                                    </li>
-                                    <li className="nav-item">
-                                        <Link  to="/" class="btn btn-secondary">Log out</Link>
-                                    </li>
-                                </ul>
-                            </div>
-                        </nav>
-                    </div>
-                </header>
+                                )}
+                                <li className="nav-item">
+                                    <Link to="/" className="btn btn-secondary text-white ms-2">Log out</Link>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </header>
 
 
             <section className="wedo_section layout_padding-bottom">

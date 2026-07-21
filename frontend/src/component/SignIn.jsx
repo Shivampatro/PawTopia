@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '../index.css';
+import { API_BASE_URL } from '../config';
 
 
 export default function SignIn(props) {
@@ -14,7 +15,7 @@ export default function SignIn(props) {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/signin', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -31,7 +32,11 @@ export default function SignIn(props) {
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            navigate('/dashboard');
+            if (data.user.role === 'admin') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             console.error('Error signing in:', err);
             setError('Server connection error. Please try again.');
@@ -74,6 +79,9 @@ export default function SignIn(props) {
                 </div>
                 <div className="not-member">
                     Not a member? <Link to="/signup">Sign Up Now</Link>
+                </div>
+                <div className="not-member" style={{ marginTop: '5px' }}>
+                    Are you an Admin? <Link to="/admin-login" style={{ color: '#ffc107', fontWeight: 'bold' }}>Admin Sign In</Link>
                 </div>
             </div>
         </>

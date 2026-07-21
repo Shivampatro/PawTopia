@@ -20,13 +20,16 @@ import c3 from "../images/client3.png";
 
 
 export default function Main(props) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user && user.role === 'admin';
+
     return (
         <>
             <div className="hero_area">
                 <header className="header_section">
                     <div className="container">
                         <nav className="navbar navbar-expand-lg custom_nav-container ">
-                            <Link className="navbar-brand" to=" ">
+                            <Link className="navbar-brand" to="/dashboard">
                                 <img src={Logo} alt="" />
                                 <span>
                                     PawTopia
@@ -40,7 +43,7 @@ export default function Main(props) {
                             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                                 <ul className="navbar-nav ">
                                     <li className="nav-item active">
-                                        <Link className="nav-link" to=" "> Home </Link>
+                                        <Link className="nav-link" to="/dashboard"> Home </Link>
                                     </li>
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/about"> About </Link>
@@ -49,10 +52,18 @@ export default function Main(props) {
                                         <Link className="nav-link" to="/pet_adop"> Pets Category </Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link className="nav-link pr-lg-0" to="/contact"> Contact us</Link>
+                                        <Link className="nav-link" to="/accessories"> Accessories </Link>
                                     </li>
                                     <li className="nav-item">
-                                        <Link to="/" class="btn btn-secondary">Log out</Link>
+                                        <Link className="nav-link pr-lg-0" to="/contact"> Contact us</Link>
+                                    </li>
+                                    {isAdmin && (
+                                        <li className="nav-item">
+                                            <Link className="nav-link text-warning fw-bold" to="/admin/dashboard">Admin Panel</Link>
+                                        </li>
+                                    )}
+                                    <li className="nav-item">
+                                        <Link to="/" className="btn btn-secondary text-white ms-2">Log out</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -75,10 +86,10 @@ export default function Main(props) {
                                         We provide a safe, caring, and welcoming environment where pets receive the love and attention they deserve. From adoption and training to grooming and daily care, our dedicated team is committed to ensuring every pet enjoys a healthy, happy, and fulfilling life. 🐾❤️
                                     </p>
                                     <div className="btn-box">
-                                        <Link to=" " className="btn-1">
+                                        <Link to="/about" className="btn-1">
                                             What we do
                                         </Link>
-                                        <Link to=" " className="btn-2">
+                                        <Link to="/pet_adop" className="btn-2">
                                             Adopt Pet
                                         </Link>
                                     </div>

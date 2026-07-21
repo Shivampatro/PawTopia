@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import '../index.css';
 import Logo from "../images/logo.png";
@@ -6,15 +6,74 @@ import client_bg from "../images/client-bg.jpg";
 import ap1 from "../images/ap1.jpg";
 import ap2 from "../images/ap2.jpg";
 import ap3 from "../images/ap3.jpg";
+import ap4 from "../images/ap4.jpg";
+import ap5 from "../images/ap5.jpg";
+import ap6 from "../images/ap6.jpg";
+import ap7 from "../images/ap7.jpg";
+import ap8 from "../images/ap8.jpg";
+import ap9 from "../images/ap9.jpg";
+import ap10 from "../images/ap10.jpg";
+import ap11 from "../images/ap11.jpg";
+import { API_BASE_URL } from '../config';
 
 
-export default function pet_adop(props) {
+export default function PetAdop(props) {
+    const [pets, setPets] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user && user.role === 'admin';
+
+    useEffect(() => {
+        const fetchPets = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/pets`);
+                const data = await response.json();
+                if (response.ok) {
+                    setPets(data);
+                }
+            } catch (error) {
+                console.error('Error fetching pets:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPets();
+    }, []);
+
+    const getPetImage = (imageName) => {
+        if (!imageName) return ap1;
+        if (imageName.startsWith('http://') || imageName.startsWith('https://') || imageName.startsWith('data:')) {
+            return imageName;
+        }
+        const map = {
+            'ap1.jpg': ap1,
+            'ap2.jpg': ap2,
+            'ap3.jpg': ap3,
+            'ap4.jpg': ap4,
+            'ap5.jpg': ap5,
+            'ap6.jpg': ap6,
+            'ap7.jpg': ap7,
+            'ap8.jpg': ap8,
+            'ap9.jpg': ap9,
+            'ap10.jpg': ap10,
+            'ap11.jpg': ap11,
+            'client-bg.jpg': client_bg
+        };
+        return map[imageName] || ap1;
+    };
+
+    const rescueDogs = pets.filter(p => p.category === 'Rescue Dog');
+    const breedDogs = pets.filter(p => p.category === 'Breed Dog');
+    const rescueCats = pets.filter(p => p.category === 'Rescue Cat');
+    const breedCats = pets.filter(p => p.category === 'Breed Cat');
+
     return (
         <>
             <header className="header_section">
                 <div className="container">
                     <nav className="navbar navbar-expand-lg custom_nav-container ">
-                        <Link className="navbar-brand" to="index.html">
+                        <Link className="navbar-brand" to="/dashboard">
                             <img src={Logo} alt="" />
                             <span>
                                 PawTopia
@@ -27,20 +86,28 @@ export default function pet_adop(props) {
 
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav ">
-                                <li className="nav-item active">
+                                <li className="nav-item">
                                     <Link className="nav-link" to="/dashboard"> Home </Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to="/about"> About </Link>
                                 </li>
+                                <li className="nav-item active">
+                                    <Link className="nav-link" to="/pet_adop"> Pets Category </Link>
+                                </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to=" "> Pets Category </Link>
+                                    <Link className="nav-link" to="/accessories"> Accessories </Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link pr-lg-0" to="/contact"> Contact us</Link>
                                 </li>
+                                {isAdmin && (
+                                    <li className="nav-item">
+                                        <Link className="nav-link text-warning fw-bold" to="/admin/dashboard">Admin Panel</Link>
+                                    </li>
+                                )}
                                 <li className="nav-item">
-                                        <Link to="/" class="btn btn-secondary">Log out</Link>
+                                        <Link to="/" className="btn btn-secondary text-white ms-2">Log out</Link>
                                 </li>
                             </ul>
                         </div>
@@ -123,31 +190,24 @@ export default function pet_adop(props) {
                             <hr />
                         </h2>
                     </div>
-                    <div class="row">
-                        <div class="pic-dog-cat card m-2" >
-                            <img class="card-img-top" src={ap1} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">2 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap1} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">4 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap1} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">6 Month | Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Log out</Link>
-                            </div>
-                        </div>
+                    <div className="row justify-content-center">
+                        {loading ? (
+                            <div className="text-center p-3">Loading rescue dogs...</div>
+                        ) : rescueDogs.length === 0 ? (
+                            <p className="text-center text-muted">No rescue dogs available at this moment.</p>
+                        ) : (
+                            rescueDogs.map(pet => (
+                                <div className="pic-dog-cat card m-2" key={pet._id} style={{ width: '18rem' }}>
+                                    <img className="card-img-top" src={getPetImage(pet.image)} alt={pet.name} style={{ height: '220px', objectFit: 'cover' }} />
+                                    <div className="card-body text-dark text-center">
+                                        <h4 className="card-title">{pet.name}</h4>
+                                        <p className="card-text">{pet.age} | {pet.gender}</p>
+                                        <p className="card-text text-muted small">{pet.description}</p>
+                                        <Link to="/contact" className="btn btn-secondary">Buy Now</Link>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
@@ -161,31 +221,24 @@ export default function pet_adop(props) {
                             <hr />
                         </h2>
                     </div>
-                    <div class="row">
-                        <div class="pic-dog-cat card m-2" >
-                            <img class="card-img-top" src={client_bg} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">2 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={client_bg} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">4 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={client_bg} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">6 Month | Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
+                    <div className="row justify-content-center">
+                        {loading ? (
+                            <div className="text-center p-3">Loading breed dogs...</div>
+                        ) : breedDogs.length === 0 ? (
+                            <p className="text-center text-muted">No breed dogs available at this moment.</p>
+                        ) : (
+                            breedDogs.map(pet => (
+                                <div className="pic-dog-cat card m-2" key={pet._id} style={{ width: '18rem' }}>
+                                    <img className="card-img-top" src={getPetImage(pet.image)} alt={pet.name} style={{ height: '220px', objectFit: 'cover' }} />
+                                    <div className="card-body text-dark text-center">
+                                        <h4 className="card-title">{pet.name}</h4>
+                                        <p className="card-text">{pet.age} | {pet.gender}</p>
+                                        <p className="card-text text-muted small">{pet.description}</p>
+                                        <Link to="/contact" className="btn btn-secondary">Buy Now</Link>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
@@ -195,35 +248,28 @@ export default function pet_adop(props) {
                     <div className="heading_container heading_center">
                         <h2>
                             <hr />
-                            Rescue Cat
+                            Rescue Cats
                             <hr />
                         </h2>
                     </div>
-                    <div class="row">
-                        <div class="pic-dog-cat card m-2" >
-                            <img class="card-img-top" src={ap2} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">2 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap2} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">4 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap2} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">6 Month | Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
+                    <div className="row justify-content-center">
+                        {loading ? (
+                            <div className="text-center p-3">Loading rescue cats...</div>
+                        ) : rescueCats.length === 0 ? (
+                            <p className="text-center text-muted">No rescue cats available at this moment.</p>
+                        ) : (
+                            rescueCats.map(pet => (
+                                <div className="pic-dog-cat card m-2" key={pet._id} style={{ width: '18rem' }}>
+                                    <img className="card-img-top" src={getPetImage(pet.image)} alt={pet.name} style={{ height: '220px', objectFit: 'cover' }} />
+                                    <div className="card-body text-dark text-center">
+                                        <h4 className="card-title">{pet.name}</h4>
+                                        <p className="card-text">{pet.age} | {pet.gender}</p>
+                                        <p className="card-text text-muted small">{pet.description}</p>
+                                        <Link to="/contact" className="btn btn-secondary">Buy Now</Link>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
@@ -233,35 +279,28 @@ export default function pet_adop(props) {
                     <div className="heading_container heading_center">
                         <h2>
                             <hr />
-                            Breed Cat
+                            Breed Cats
                             <hr />
                         </h2>
                     </div>
-                    <div class="row">
-                        <div class="pic-dog-cat card m-2" >
-                            <img class="card-img-top" src={ap3} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">2 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap3} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">4 Month | Fe-Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
-                        <div class="pic-dog-cat card card m-2">
-                            <img class="card-img-top" src={ap3} alt="a snow-capped mountain range" />
-                            <div class="card-body text-dark text-center">
-                                <h4 class="card-title">XYZ</h4>
-                                <p class="card-text">6 Month | Male</p>
-                                <Link to="/contact" class="btn btn-secondary">Buy Now</Link>
-                            </div>
-                        </div>
+                    <div className="row justify-content-center">
+                        {loading ? (
+                            <div className="text-center p-3">Loading breed cats...</div>
+                        ) : breedCats.length === 0 ? (
+                            <p className="text-center text-muted">No breed cats available at this moment.</p>
+                        ) : (
+                            breedCats.map(pet => (
+                                <div className="pic-dog-cat card m-2" key={pet._id} style={{ width: '18rem' }}>
+                                    <img className="card-img-top" src={getPetImage(pet.image)} alt={pet.name} style={{ height: '220px', objectFit: 'cover' }} />
+                                    <div className="card-body text-dark text-center">
+                                        <h4 className="card-title">{pet.name}</h4>
+                                        <p className="card-text">{pet.age} | {pet.gender}</p>
+                                        <p className="card-text text-muted small">{pet.description}</p>
+                                        <Link to="/contact" className="btn btn-secondary">Buy Now</Link>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>

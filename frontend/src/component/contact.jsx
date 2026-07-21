@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import '../index.css';
 import Logo from "../images/logo.png";
+import { API_BASE_URL } from '../config';
 
 
 export default function Contact(props) {
@@ -12,13 +13,28 @@ export default function Contact(props) {
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
 
+    const location = useLocation();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const isAdmin = user && user.role === 'admin';
+
+    useEffect(() => {
+        if (location.state && location.state.prefilledMessage) {
+            setMessage(location.state.prefilledMessage);
+        }
+        if (user && user.firstName) {
+            setName(`${user.firstName} ${user.lastName || ''}`.trim());
+            setEmail(user.email || '');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSuccess('');
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/contact', {
+            const response = await fetch(`${API_BASE_URL}/api/contact`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,8 +50,8 @@ export default function Contact(props) {
             }
 
             setSuccess('Message sent successfully! We will get back to you soon.');
-            setName('');
-            setEmail('');
+            setName(user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : '');
+            setEmail(user.email || '');
             setPhoneNumber('');
             setMessage('');
         } catch (err) {
@@ -50,7 +66,7 @@ export default function Contact(props) {
             <header className="header_section">
                 <div className="container">
                     <nav className="navbar navbar-expand-lg custom_nav-container ">
-                        <Link className="navbar-brand" to="index.html">
+                        <Link className="navbar-brand" to="/dashboard">
                             <img src={Logo} alt="" />
                             <span>
                                 PawTopia    
@@ -63,7 +79,7 @@ export default function Contact(props) {
 
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav ">
-                                <li className="nav-item active">
+                                <li className="nav-item">
                                     <Link className="nav-link" to="/dashboard"> Home </Link>
                                 </li>
                                 <li className="nav-item">
@@ -73,10 +89,18 @@ export default function Contact(props) {
                                     <Link className="nav-link" to="/pet_adop"> Pets Category </Link>
                                 </li>
                                 <li className="nav-item">
+                                    <Link className="nav-link" to="/accessories"> Accessories </Link>
+                                </li>
+                                <li className="nav-item active">
                                     <Link className="nav-link pr-lg-0" to="/contact"> Contact us</Link>
                                 </li>
+                                {isAdmin && (
+                                    <li className="nav-item">
+                                        <Link className="nav-link text-warning fw-bold" to="/admin/dashboard">Admin Panel</Link>
+                                    </li>
+                                )}
                                 <li className="nav-item">
-                                        <Link to="/" class="btn btn-secondary">Log out</Link>
+                                        <Link to="/" className="btn btn-secondary text-white ms-2">Log out</Link>
                                 </li>
                             </ul>
                         </div>

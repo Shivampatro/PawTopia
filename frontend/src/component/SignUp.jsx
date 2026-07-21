@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-// import SignIn from './component/SignIn';
 import '../index.css';
+import { API_BASE_URL } from '../config';
 
 export default function SignUp(props) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [adminSecret, setAdminSecret] = useState('');
+    const [showAdminField, setShowAdminField] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
@@ -18,12 +20,12 @@ export default function SignUp(props) {
         setSuccess('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/signup', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ firstName, lastName, email, password }),
+                body: JSON.stringify({ firstName, lastName, email, password, adminSecret }),
             });
 
             const data = await response.json();
@@ -78,6 +80,26 @@ export default function SignUp(props) {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+                    <div style={{ margin: '8px 0', textAlign: 'left', paddingLeft: '8%' }}>
+                        <label style={{ fontSize: '13px', cursor: 'pointer', color: '#07001f' }}>
+                            <input 
+                                type="checkbox" 
+                                checked={showAdminField} 
+                                onChange={(e) => setShowAdminField(e.target.checked)} 
+                                style={{ width: 'auto', marginRight: '6px', marginBottom: '0', verticalAlign: 'middle' }}
+                            />
+                            Register as Admin?
+                        </label>
+                    </div>
+                    {showAdminField && (
+                        <input 
+                            type="password" 
+                            placeholder="Admin Secret Code" 
+                            value={adminSecret}
+                            onChange={(e) => setAdminSecret(e.target.value)}
+                            required
+                        />
+                    )}
                     <p className="recover not-member">
                         Already a member?<Link to="/"> Sign In</Link>
                     </p>
